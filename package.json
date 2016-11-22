@@ -1,0 +1,35 @@
+{
+  "name": "peoleo_node_bootstrap",
+  "version": "0.0.1",
+  "description": "Bootstrap for nodejs apps",
+  "license": "Apache-2.0",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sileax/CheckCSRF"
+  },
+  "scripts": {
+    "start": "node ./app.js",
+    "lint": "jshint --config jshintconfig.json .",
+    "mocha": "mocha ./ut/*.js"
+  },
+  "author": {
+    "name": "Guillaume BAUDHUIN"
+  },
+  "dependencies": {
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "cheerio": "^0.22.0",
+    "commander": "^2.9.0",
+    "jshint": "^2.9.4",
+    "jslint": "^0.10.3",
+    "mocha": "^3.1.2",
+    "q": "^1.4.1",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1",
+    "winston": "^2.3.0"
+  },
+  "bin": {
+    "tester": "tester.js"
+  }
+}
