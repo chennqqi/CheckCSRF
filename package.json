@@ -20,16 +20,20 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "cheerio": "^0.22.0",
+    "colors": "^1.1.2",
     "commander": "^2.9.0",
     "jshint": "^2.9.4",
     "jslint": "^0.10.3",
     "mocha": "^3.1.2",
+    "progress": "^1.1.8",
+    "prompt": "^1.0.0",
     "q": "^1.4.1",
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
-    "winston": "^2.3.0"
+    "winston": "^2.3.0",
+    "zombie": "^5.0.5"
   },
   "bin": {
-    "tester": "tester.js"
+    "check": "tester.js"
   }
 }

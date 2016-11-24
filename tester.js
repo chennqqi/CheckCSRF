@@ -9,24 +9,31 @@ program
   .version('1.0.0')
   .option('-u, --url [url]', 'Url of the website')
   .parse(process.argv);
-if (program.url) {
-  if (program.url !== "") { // on vérifie si l'url du fichier a caster n'est pas vide
-    website = new csrf(program.url);
-    return website.checkAvailability()
-      .then(function () {
-        return website.checkIfPageHaveAForm().then(function(){
-          return website.checkIfFormHaveAnHiddenInput().then(function(){
-            return website.checkIfFormContainToken().then(function(){
-              return website.checkIfTokenChange().then(function(){
-                  return website.checkEntropy();
+if (program.url && program.url !== '') {
+  website = new csrf(program.url);
+  return website.checkAvailability().then(function () {
+    return website.checkIfPageHaveAForm().then(function () {
+      return website.checkIfFormIsAConnectionForm().then(function () {
+        return website.formConnect().then(function () {
+          return website.askSecuredPage().then(function () {
+            return website.checkIfPageIsAvailableWithoutBeingConnected().then(function () {
+              return website.checkIfPageIsAvailableWhenConnected().then(function () {
+                return website.checkIfFormHaveAnHiddenInput().then(function () {
+                  return website.checkIfFormContainToken().then(function () {
+                    return website.checkIfTokenChange().then(function () {
+                      return website.checkEntropy().then(function () {
+                        process.exit(0);
+                      });
+                    });
+                  });
+                });
               });
             });
           });
         });
       });
-  } else { // si l'url du fichier à caster est vide :
-    console.log('Url is incorrect');
-  }
-} else { // si l'utilisateur n'a pas mis l'argument -f :
-  console.log('Please provide an url to continue');
+    });
+  });
+} else { // if URL is empty :
+  console.log('Please provide an URL to continue');
 }
