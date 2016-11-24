@@ -7,7 +7,7 @@ Like all nodeJS app it can be installed by typing
 npm install
 ```
 
-After that make a ``` npm link ``` to use app with ```tester``` command.
+After that make a ``` npm link ``` to use app with ```check``` command.
 
 # Usage
 The module need a valid URL to be used
