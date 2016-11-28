@@ -9,6 +9,8 @@ npm install
 
 After that make a ``` npm link ``` to use app with ```check``` command.
 
+If you are on Linux or on Mac OS the command is ``` sudo npm link ``` 
+
 # Usage
 The module need a valid URL to be used
 ```

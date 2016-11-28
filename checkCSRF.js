@@ -384,4 +384,123 @@ module.exports = class checkCSRF {
       });
     return defer.promise;
   }
+
+  checkVulnerabilityToClickJacking() {
+    var defer = Q.defer();
+    var website = this;
+    rp(website._url)
+      .then(function (body) {
+        body = body.toLowerCase();
+        if (body.indexOf("x-frame-options") || body.indexOf("Content-Security-Policy") || body.indexOf('http-equiv="refresh"')) {
+          console.log('Elements found assuring website is protected against click jacking \n' +
+            'if you\'re not aware of what is click jacking you can visit https://www.owasp.org/index.php/Clickjacking'
+          );
+          defer.resolve(website._SUCCESS);
+        }
+        else {
+          let error = 'Take care, this website isn\'t protected against Click jacking attacks, be cautious when you click on a link' +
+            'remember to always check if cursor have change when you hover a link.';
+          logger.log('error', error);
+          defer.resolve(error);
+        }
+      })
+      .catch(function () {
+        let error = 'An error occured while fetching : ' + website._url;
+        logger.log('error', error);
+        defer.reject(error);
+      });
+    return defer.promise;
+  }
+
+  checkVulnerabilityToXSS() {
+    var defer = Q.defer();
+    var website = this;
+    var options = {
+      method: 'get',
+      uri: website._url,
+      resolveWithFullResponse: true    //  <---  <---  <---  <---
+    };
+    rp(options)
+      .then(function (response) {
+        if (response.headers['x-xss-protection'] === '1; mode=block' || response.headers['x-xss-protection'] === '1;mode=block') {
+          console.log('This website have basic XSS protection, we\'ll now test other XSS case');
+        }
+        options.uri = website._url + '?q=<script></script>';
+        rp(options)
+          .then(function (response) {
+            if (response.statusCode === 200) {
+              let error = 'Take care <script> tag in URL doesn\'t make url to be rejected \n' +
+                'Except if you have a script that makes the job, check how to activate the protection for your server type (Apache, NGINX...)';
+              logger.log('error', error);
+              defer.resolve(website.error);
+            }
+          })
+          .catch(function () {
+            console.log('The website have reset the connection while testing with <script> tag in the url, don\'t worry that can be a good thing');
+            defer.resolve(website._SUCCESS);
+          });
+      })
+      .catch(function () {
+        let error = 'An error occured while fetching : ' + website._url;
+        logger.log('error', error);
+        options.uri = website._url + '?q=<script></script>';
+      });
+
+
+
+    return defer.promise;
+  }
+
+  checkIfWebsiteSupportsHttps() {
+    var defer = Q.defer();
+    var website = this;
+    var httpUrl = null;
+    if (website._url.indexOf('https') !== -1) {
+      httpUrl = website._url.replace('https', 'http');
+    }
+    else {
+      httpUrl = website._url;
+    }
+    var options = {
+      method: 'get',
+      uri: httpUrl,
+      followRedirect: false,
+      resolveWithFullResponse: true    //  <---  <---  <---  <---
+    };
+    rp(options)
+      .then(function (response) {
+        let error = 'The website doesn\'t automatically redirect you to https, it is a breach for user anonymity and security';
+        logger.log('error', error);
+        console.log(response.statusCode);
+        var httpsUrl = httpUrl.replace('http', 'https');
+        options.uri = httpsUrl;
+        rp(options)
+          .then(function (response) {
+            console.log(response.statusCode);
+            if (response.statusCode === 202) {
+              console.log('The website SSL server does not match the request url');
+              defer.resolve(website.error);
+            }
+          })
+          .catch(function (err) {
+            let error = 'Your connection is not private or the website does not support HTTPS';
+            logger.log('error', error);
+            defer.resolve(error);
+          });
+      })
+      .catch(function (err) {
+        if (err.statusCode === 301 || err.statusCode === 307) {
+          console.log('Great the website automatically redirect you to https');
+          defer.resolve(website._SUCCESS);
+        }
+        if (err.statusCode === 302) {
+          let error = 'Your connection is not private on this website or the website does not support HTTPS';
+          logger.log('error', error);
+          defer.resolve(error);
+        }
+      });
+
+    return defer.promise;
+  }
+
 };
