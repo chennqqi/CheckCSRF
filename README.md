@@ -20,7 +20,3 @@ check -u http://SITE_TO_CHECK.DOMAIN/QUERY
 # Logging
 
 The logs of the app are stored in the Error.log file.
-
-# Improvements
-
-If you want to contribute to this app, make me a merge request i'll try to answer it quickly.
